@@ -97,22 +97,22 @@ class Api::UsersController < Api::ApplicationController
 
     def list
         items = User.active
-        query = params.permit(:page,:size,:order,:sort,:keywords,:status,:created_from,:created_to)
-        page = query[:page].present? ? query[:page] : 1
-        size = query[:size].present? ? query[:size] : 25
+        query = params.permit(:offset,:limit,:orderBy,:sortBy,:zh_name,:en_name,:email,:status,:created_from,:created_to)
+        offset = query[:offset].present? ? query[:offset] : 0
+        size = query[:limit].present? ? query[:limit] : 25
 
-        order = query[:order].present? ? query[:order] : "en_name"
-        sort = query[:sort].present? ? query[:sort] : "desc"
+        order = query[:orderBy].present? ? query[:orderBy] : "en_name"
+        sort = query[:sortBy].present? ? query[:sortBy] : "desc"
 
         if query[:keywords].present?
-            items = items.where("zh_name ILIKE ? OR en_name ILIKE ? OR email ILIKE ? OR ","%#{query[:keywords]}%","%#{query[:keywords]}%","%#{query[:keywords]}%")
+            items = items.where("zh_name ILIKE ? OR en_name ILIKE ? OR email ILIKE ? OR ","%#{query[:zh_name]}%","%#{query[:en_name]}%","%#{query[:email]}%")
         end
         items = items.order(order => sort)
         render json: {
             message: "success",
             error: nil,
             count: items.count,
-            data: items.paginate(page,size).map  { |item|
+            data: items.paginate(offset,size).map  { |item|
                 user = item.attributes.except("is_deleted","password_digest","user_role_id")
                 user[:user_role] = item.user_role.attributes.except("is_deleted")
                 user

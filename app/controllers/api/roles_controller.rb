@@ -20,22 +20,22 @@ class Api::RolesController < Api::ApplicationController
 
     def list
         items = UserRole.active
-        query = params.permit(:page,:size,:order,:sort,:keywords,:status,:created_from,:created_to)
-        page = query[:page].present? ? query[:page] : 1
-        size = query[:size].present? ? query[:size] : 25
+        query = params.permit(:offset,:limit,:orderBy,:sortBy,:name,:status,:created_from,:created_to)
+        offset = query[:offset].present? ? query[:offset] : 0
+        size = query[:limit].present? ? query[:limit] : 25
 
-        order = query[:order].present? ? query[:order] : "name"
-        sort = query[:sort].present? ? query[:sort] : "desc"
+        order = query[:orderBy].present? ? query[:orderBy] : "name"
+        sort = query[:sortBy].present? ? query[:sortBy] : "desc"
 
         if query[:keywords].present?
-            items = items.where("name ILIKE ?","%#{query[:keywords]}%")
+            items = items.where("name ILIKE ?","%#{query[:name]}%")
         end
         items = items.order(order => sort)
         render json: {
             message: "success",
             error: nil,
             count: items.count,
-            data: items.paginate(page,size).map  { |item|
+            data: items.paginate(offset,size).map  { |item|
                 role = item.attributes.except("is_deleted")
                 role
             }

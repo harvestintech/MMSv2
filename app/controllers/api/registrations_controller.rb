@@ -7,7 +7,8 @@ class Api::RegistrationsController < Api::ApplicationController
     end
 
     def get
-
+        items = Registration.active
+        query = params.permit(:page, :size:)
     end
 
     def create
