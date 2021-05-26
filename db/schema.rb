@@ -199,6 +199,7 @@ ActiveRecord::Schema.define(version: 2020_11_11_145701) do
     t.string "gender"
     t.string "birth_year"
     t.string "birth_month"
+    t.string "birth_date"
     t.string "address1"
     t.string "address2"
     t.string "city"
@@ -295,9 +296,10 @@ ActiveRecord::Schema.define(version: 2020_11_11_145701) do
   end
 
   create_table "memberships", force: :cascade do |t|
+    t.bigint "member_id", null: false
     t.string "membership_ref", limit: 10, null: false
     t.string "approved_by"
-    t.datetime "apprived_at"
+    t.datetime "approved_at"
     t.string "year"
     t.datetime "expired_at"
     t.string "status", default: "New"
@@ -307,6 +309,7 @@ ActiveRecord::Schema.define(version: 2020_11_11_145701) do
     t.string "updated_by"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["member_id"], name: "index_memberships_on_member_id"
     t.index ["membership_ref"], name: "index_memberships_on_membership_ref"
   end
 
@@ -480,6 +483,7 @@ ActiveRecord::Schema.define(version: 2020_11_11_145701) do
   add_foreign_key "membership_snapshots", "memberships"
   add_foreign_key "membership_transactions", "memberships"
   add_foreign_key "membership_transactions", "transactions"
+  add_foreign_key "memberships", "members"
   add_foreign_key "payments", "payment_types"
   add_foreign_key "registrations", "members"
   add_foreign_key "transactions", "bank_accounts"

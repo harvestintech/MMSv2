@@ -13,6 +13,7 @@ class CreateMembers < ActiveRecord::Migration[6.0]
       t.string :gender
       t.string :birth_year
       t.string :birth_month
+      t.string :birth_date
       t.string :address1
       t.string :address2
       t.string :city

@@ -10,7 +10,7 @@ class Api::ApplicationController < ApplicationController
         pattern = /^Bearer /
         token  = request.headers['Authorization']
         token = token.gsub(pattern, '') if token && token.match(pattern)
-
+        p "user_authorize_request"
         # p token
         # if token.nil? 
         #   token = session[:user_token]          
@@ -34,6 +34,10 @@ class Api::ApplicationController < ApplicationController
         rescue JWT::DecodeError => e
           render json: { message: e.message, error: e.message }, status: :unauthorized
         end
+      end
+
+      def admin_request
+        # for user role checking
       end
     
       def current_user 

@@ -1,6 +1,7 @@
 class Api::RegistrationsController < Api::ApplicationController
 
     before_action :user_authorize_request
+    before_action :admin_request, only: [:approve]
 
     def list
         items = Registration.active
@@ -10,7 +11,7 @@ class Api::RegistrationsController < Api::ApplicationController
             :email,:phone, :work_phone, :hkid, :gender, :birth_year, :birth_month, :birth_date, 
             :address1, :address2, :city, :state, :country, :zip_code, 
             :post_address1, :post_address2, :post_city, :post_state, :post_country, :post_zip_code,
-            :company, :company_address, :department, :position, :employment_proof, :employment_type
+            :company, :company_address, :department, :position, :employment_type
         )
 
         offset = query[:offset].present? ? query[:offset] : 0

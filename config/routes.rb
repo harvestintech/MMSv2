@@ -19,6 +19,20 @@ Rails.application.routes.draw do
       # get "/" => :list
     end
 
+    scope :controller => "members", :path => "/members" do
+      get "/" => :list
+      get "/:item_id" => :get
+      post "/create" => :create
+      patch "/update/:item_id" => :update
+    end
+
+    scope :controller => "memberships", :path => "/memberships" do
+      get "/" => :list
+      get "/:item_id" => :get
+      post "/create" => :create
+      patch "/update/:item_id" => :update
+    end
+
     scope :controller => "registrations", :path => "/registrations" do
       get "/" => :list
       get "/:item_id" => :get

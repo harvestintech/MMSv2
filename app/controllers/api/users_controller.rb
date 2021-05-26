@@ -142,6 +142,9 @@ class Api::UsersController < Api::ApplicationController
         }
     rescue ActiveRecord::RecordNotFound => e
         render json: { message: "data_not_found", error: "data_not_found" }, status: :not_found
+    rescue => e
+        p e
+        render json: { error: "system_error", message: e.message }, status: :internal_server_error
     end
 
     def create

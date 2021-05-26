@@ -1,8 +1,8 @@
-class Api::MembersController < Api::ApplicationController
+class Api::MembershipsController < Api::ApplicationController
     before_action :user_authorize_request
 
     def list
-        items = Member.active
+        items = Membership.active
         query = params.permit(:offset,:limit,:orderBy,:sortBy)
         offset = query[:offset].present? ? query[:offset] : 0
         size = query[:limit].present? ? query[:limit] : 25
@@ -11,12 +11,8 @@ class Api::MembersController < Api::ApplicationController
         sort = query[:sortBy].present? ? query[:sortBy] : "desc"
         
         filter = params.permit(
-            :zh_first_name,:zh_last_name, :en_first_name, :en_last_name,
-            :email,:phone, :work_phone, :hkid, :gender, :birth_year, :birth_month, :birth_date, 
-            :address1, :address2, :city, :state, :country, :zip_code, 
-            :post_address1, :post_address2, :post_city, :post_state, :post_country, :post_zip_code,
-            :company, :company_address, :department, :position, :employment_type
-        )
+                :membership_ref, :approved_by, :year, :status, :remark
+            )
 
         filter.each {|key,value|
             if value.present?
@@ -24,11 +20,18 @@ class Api::MembersController < Api::ApplicationController
             end
         }
 
-        applyRange = params.permit(:apply_from, :apply_to)
-        from = applyRange[:apply_from].present? ? applyRange[:apply_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
-        to = applyRange[:apply_to].present? ? applyRange[:apply_to].to_time.end_of_day : DateTime.now.end_of_day
-        if applyRange[:apply_from].present? || applyRange[:apply_to].present?
-            items = items.where(apply_at: from..to)
+        approvedRange = params.permit(:approved_from, :approved_to)
+        approvedFrom = approvedRange[:approved_from].present? ? approvedRange[:approved_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
+        approvedTo = approvedRange[:approved_to].present? ? approvedRange[:approved_to].to_time.end_of_day : DateTime.now.end_of_day
+        if approvedRange[:approved_from].present? || approvedRange[:approved_to].present?
+            items = items.where(apply_at: approvedFrom..approvedTo)
+        end
+
+        expiredRange = params.permit(:expried_from, :expried_to)
+        expriedFrom = expiredRange[:expried_from].present? ? expiredRange[:expried_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
+        expriedTo = expiredRange[:expried_to].present? ? expiredRange[:expried_to].to_time.end_of_day : DateTime.now.end_of_day
+        if expiredRange[:expried_from].present? || expiredRange[:expried_to].present?
+            items = items.where(expired_at: expriedFrom..expriedTo)
         end
 
         createdRange = params.permit(:created_from, :created_to)
@@ -53,12 +56,9 @@ class Api::MembersController < Api::ApplicationController
 
     def get
         item_id = params[:item_id]
-        item = Member.active.find(item_id)
+        item = Membership.active.find(item_id)
         
         member = item.attributes.except("is_deleted")
-        member[:memberships] = item.memberships.map{ |ship| 
-            ship.attributes.except("is_deleted")
-        }
         render json: {
             message: "success",
             error: nil,
@@ -72,17 +72,17 @@ class Api::MembersController < Api::ApplicationController
 
     def create
         form = params.permit(
-                :zh_first_name,:zh_last_name, :en_first_name, :en_last_name,
-                :email,:phone, :work_phone, :hkid, :gender, :birth_year, :birth_month, :birth_date, 
-                :address1, :address2, :city, :state, :country, :zip_code, 
-                :post_address1, :post_address2, :post_city, :post_state, :post_country, :post_zip_code,
-                :company, :company_address, :department, :position, :employment_type, :status, :apply_at
+                :member_id, :membership_ref, :approved_by, :approved_at, :year, :expired_at,
+                :status, :remark
             )
 
-        item = Member.new(form)
+        raise ActiveRecord::RecordNotFound unless form[:member_id].present?
+        
+        member = Member.active.find(form[:member_id])
+
+        item = Membership.new(form)
         item.created_by = @current_user.en_name
         item.updated_by = @current_user.en_name
-
 
         if !item.valid?
             render status:500, json: {
@@ -101,21 +101,21 @@ class Api::MembersController < Api::ApplicationController
             error: nil,
             data: user
         }
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { message: "data_not_found", error: "data_not_found" }, status: :not_found
     rescue => e
         render json: { error: "system_error", message: e.message }, status: :internal_server_error
     end
 
     def update
         id = params[:item_id]
-        item = Member.active.find(id.to_i)
+        item = Membership.active.find(id.to_i)
 
         form = params.permit(
-                :zh_first_name,:zh_last_name, :en_first_name, :en_last_name,
-                :email,:phone, :work_phone, :hkid, :gender, :birth_year, :birth_month, :birth_date, 
-                :address1, :address2, :city, :state, :country, :zip_code, 
-                :post_address1, :post_address2, :post_city, :post_state, :post_country, :post_zip_code,
-                :company, :company_address, :department, :position, :employment_type, :status, :apply_at
+                :member_id, :membership_ref, :approved_by, :approved_at, :year, :expired_at,
+                :status, :remark
             )
+
         item.assign_attributes(form)
         item.updated_by = @current_user.en_name
 
@@ -129,7 +129,7 @@ class Api::MembersController < Api::ApplicationController
         end
         item.save
         
-        item = Member.active.find(id.to_i)
+        item = Membership.active.find(id.to_i)
         member = item.attributes.except("is_deleted")
 
         render json: {

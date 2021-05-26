@@ -8,7 +8,9 @@ class Membership < ApplicationRecord
     
     scope :active, -> { where(is_deleted: false) }
 
-    validates :membership_ref, uniqueness:  { message: "field_error_unique"}
+    # Add validation for uniqueness per member
+    # validates :membership_ref, uniqueness:  { message: "field_error_unique"}
+    
     validates :membership_ref, presence: { message: "field_error_required"}
 
 end

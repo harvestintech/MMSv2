@@ -12,6 +12,7 @@ class Member < ApplicationRecord
     # Personal information
     validates :email, presence:  { message: "field_error_required"}, format: { with: URI::MailTo::EMAIL_REGEXP } 
     validates :email, uniqueness:  { message: "field_error_unique"}
+    validates :apply_at, presence: { message: "field_error_required"}
     validates :zh_first_name, presence: { message: "field_error_required"}
     validates :zh_last_name, presence: { message: "field_error_required"}
     validates :en_first_name, presence: { message: "field_error_required"}
