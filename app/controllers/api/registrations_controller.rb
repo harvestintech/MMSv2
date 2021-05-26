@@ -8,7 +8,9 @@ class Api::RegistrationsController < Api::ApplicationController
 
     def get
         items = Registration.active
-        query = params.permit(:page, :size:)
+        query = params.permit(:offset,:limit,:orderBy,:sortBy,:zh_name,:en_name,:email,:status,:created_from,:created_to)
+
+        
     end
 
     def create

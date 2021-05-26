@@ -97,16 +97,22 @@ class Api::UsersController < Api::ApplicationController
 
     def list
         items = User.active
-        query = params.permit(:offset,:limit,:orderBy,:sortBy,:zh_name,:en_name,:email,:status,:created_from,:created_to)
+        query = params.permit(:offset,:limit,:orderBy,:sortBy)
         offset = query[:offset].present? ? query[:offset] : 0
         size = query[:limit].present? ? query[:limit] : 25
+
+        filter = params.permit(:zh_name,:en_name,:email,:status)
 
         order = query[:orderBy].present? ? query[:orderBy] : "en_name"
         sort = query[:sortBy].present? ? query[:sortBy] : "desc"
 
-        if query[:keywords].present?
-            items = items.where("zh_name ILIKE ? OR en_name ILIKE ? OR email ILIKE ? OR ","%#{query[:zh_name]}%","%#{query[:en_name]}%","%#{query[:email]}%")
-        end
+        # items = items.where(filters)
+        filter.each {|key,value|
+            if value.present?
+                items = items.where("#{key} ILIKE ? ","%#{value}%")
+            end
+        }
+            
         items = items.order(order => sort)
         render json: {
             message: "success",
@@ -119,6 +125,7 @@ class Api::UsersController < Api::ApplicationController
             }
         }
     rescue => e
+        p e
         render json: { error: "system_error", message: e.message }, status: :internal_server_error
     end
     

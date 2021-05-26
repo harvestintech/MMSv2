@@ -20,16 +20,17 @@ class Api::RolesController < Api::ApplicationController
 
     def list
         items = UserRole.active
-        query = params.permit(:offset,:limit,:orderBy,:sortBy,:name,:status,:created_from,:created_to)
+        query = params.permit(:offset,:limit,:orderBy,:sortBy,:name,:status)
         offset = query[:offset].present? ? query[:offset] : 0
         size = query[:limit].present? ? query[:limit] : 25
 
         order = query[:orderBy].present? ? query[:orderBy] : "name"
         sort = query[:sortBy].present? ? query[:sortBy] : "desc"
 
-        if query[:keywords].present?
+        if query[:name].present?
             items = items.where("name ILIKE ?","%#{query[:name]}%")
         end
+        
         items = items.order(order => sort)
         render json: {
             message: "success",

@@ -4,8 +4,8 @@ class ApplicationRecord < ActiveRecord::Base
     def paginate(offset = 0, limit = 25)
       offset = offset.to_i
       limit = limit.to_i
-
       limit(limit).offset(offset)
     end
+
   end
 end
