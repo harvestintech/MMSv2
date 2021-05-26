@@ -106,7 +106,6 @@ class Api::UsersController < Api::ApplicationController
         order = query[:orderBy].present? ? query[:orderBy] : "en_name"
         sort = query[:sortBy].present? ? query[:sortBy] : "desc"
 
-        # items = items.where(filters)
         filter.each {|key,value|
             if value.present?
                 items = items.where("#{key} ILIKE ? ","%#{value}%")
@@ -149,6 +148,8 @@ class Api::UsersController < Api::ApplicationController
         form = params.permit(:zh_name,:en_name,:email,:mobile,:user_role_id,:password,:password_confirmation, :is_actived)
 
         item = User.new(form)
+        item.created_by = @current_user.en_name
+        item.updated_by = @current_user.en_name
 
         if !item.valid?
             render status:500, json: {
@@ -176,8 +177,15 @@ class Api::UsersController < Api::ApplicationController
         id = params[:item_id]
         item = User.active.find(id.to_i)
 
-        form = params.permit(:zh_name,:en_name,:mobile,:user_role_id,:password,:password_confirmation, :is_actived)
+        form = params.permit(:zh_name,:en_name,:mobile,:user_role_id, :is_actived)
         item.assign_attributes(form)
+
+        password = params.permit(:password,:password_confirmation)
+        if password[:password].present?
+            item.assign_attributes(password)
+        end
+
+        item.updated_by = @current_user.en_name
         if !item.valid?
             render status:500, json: {
                 error: "invalid",
@@ -188,6 +196,7 @@ class Api::UsersController < Api::ApplicationController
         end
         item.save
         
+        item = User.active.find(id.to_i)
         user = item.attributes.except("is_deleted","password_digest","user_role_id")
         user[:user_role] = item.user_role.attributes.except("is_deleted")
 

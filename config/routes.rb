@@ -10,7 +10,7 @@ Rails.application.routes.draw do
       get "/:item_id" => :get
       delete "/:item_id" => :delete
       post "/create" => :create
-      patch "/update/:item_id" => :create
+      patch "/update/:item_id" => :update
 
     end
 
@@ -20,6 +20,8 @@ Rails.application.routes.draw do
     end
 
     scope :controller => "registrations", :path => "/registrations" do
+      get "/" => :list
+      get "/:item_id" => :get
       post "/create" => :create
       patch "/update/:item_id" => :update
     end
