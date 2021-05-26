@@ -4,10 +4,10 @@ Membership Management System
 
 ## System dependencies
 
- - NodeJs Version: 13.5.0
+ - NodeJs Version: 14.15.0
  - PostgreSql Version: 10.10
- - Ruby Version: 2.6.3
- - Rails Version: 6.0.2.1
+ - Ruby Version: 2.7.2
+ - Rails Version: 6.0.3.4
  - imagemagick
 
 ## Deployment command 

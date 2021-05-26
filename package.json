@@ -1,0 +1,19 @@
+{
+  "name": "mms",
+  "version": "1.0.0",
+  "description": "Membership Management System",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd client && yarn start",
+    "build": "cd client && yarn build",
+    "install": "cd client && yarn"
+  },
+  "author": "Harvest Intech",
+  "license": "ISC",
+  "dependencies": {}
+}
