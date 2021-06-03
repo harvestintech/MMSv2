@@ -10,8 +10,19 @@ Rails.application.routes.draw do
       get "/:item_id" => :get
       delete "/:item_id" => :delete
       post "/create" => :create
+      put "/update/:item_id" => :update
       patch "/update/:item_id" => :update
 
+    end
+
+    scope :controller => "bank_accounts", :path => "bank_accounts" do
+      get "/" => :list
+      get "/all" => :all
+      get "/:item_id" => :get
+      delete "/:item_id" => :delete
+      post "/create" => :create
+      put "/update/:item_id" => :update
+      patch "/update/:item_id" => :update
     end
 
     scope :controller => "roles", :path => "/roles" do
@@ -23,6 +34,7 @@ Rails.application.routes.draw do
       get "/" => :list
       get "/:item_id" => :get
       post "/create" => :create
+      put "/update/:item_id" => :update
       patch "/update/:item_id" => :update
     end
 
@@ -30,6 +42,7 @@ Rails.application.routes.draw do
       get "/" => :list
       get "/:item_id" => :get
       post "/create" => :create
+      put "/update/:item_id" => :update
       patch "/update/:item_id" => :update
     end
 
