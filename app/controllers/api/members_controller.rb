@@ -56,9 +56,6 @@ class Api::MembersController < Api::ApplicationController
         item = Member.active.find(item_id)
         
         member = item.attributes.except("is_deleted")
-        member[:memberships] = item.memberships.map{ |ship| 
-            ship.attributes.except("is_deleted")
-        }
         render json: {
             message: "success",
             error: nil,
@@ -138,6 +135,35 @@ class Api::MembersController < Api::ApplicationController
             data: member
         }
 
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { message: e.message, error: "data_not_found" }, status: :not_found
+    rescue => e
+        render json: { error: "system_error", message: e.message }, status: :internal_server_error
+    end
+
+    def get_memberships
+        item_id = params[:item_id]
+        item = Member.active.find(item_id)
+        
+        items = item.memberships.active
+
+        query = params.permit(:offset,:limit,:orderBy,:sortBy)
+        offset = query[:offset].present? ? query[:offset] : 0
+        size = query[:limit].present? ? query[:limit] : 25
+
+        order = query[:orderBy].present? ? query[:orderBy] : "updated_at"
+        sort = query[:sortBy].present? ? query[:sortBy] : "desc"
+
+        items = items.order(order => sort)
+        
+        render json: {
+            message: "success",
+            error: nil,
+            data: items.paginate(offset,size).map  { |item|
+                member = item.attributes.except("is_deleted")
+                member
+            }
+        }
     rescue ActiveRecord::RecordNotFound => e
         render json: { message: e.message, error: "data_not_found" }, status: :not_found
     rescue => e
