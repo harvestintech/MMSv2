@@ -7,14 +7,17 @@ class Api::ApplicationController < ApplicationController
     
       def user_authorize_request
     
-        pattern = /^Bearer /
-        token  = request.headers['Authorization']
-        token = token.gsub(pattern, '') if token && token.match(pattern)
         p "user_authorize_request"
-        # p token
-        # if token.nil? 
-        #   token = session[:user_token]          
-        # end
+
+        p "Check if using http-only cookie"
+        token = session[:user_token]
+        
+        if !token.present?
+          p "Not using http-only is this case, check authorization header instead."
+          pattern = /^Bearer /
+          token  = request.headers['Authorization']
+          token = token.gsub(pattern, '') if token && token.match(pattern)
+        end
 
         if token.nil?
             render json: { message: "token_not_found", error: "token_not_found" }, status: :unauthorized

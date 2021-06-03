@@ -44,13 +44,12 @@ class Api::UsersController < Api::ApplicationController
             return
         end
 
-        # session[:user_token] = usertoken.token
+        session[:user_token] = usertoken.token
 
         render json: {
             message: "success",
             error: nil,
             data: {
-                token: usertoken.token,
                 exp_date: usertoken.expired_at,
                 zh_name: user.zh_name,
                 en_name: user.en_name
