@@ -2,7 +2,7 @@ class Registration < ApplicationRecord
 
     has_paper_trail
 
-    belongs_to :member, optional: true
+    belongs_to :membership, optional: true
 
     scope :active, -> { where(is_deleted: false) }
 

@@ -91,10 +91,16 @@ class Api::RegistrationsController < Api::ApplicationController
                 :company, :company_address, :department, :position, :employment_proof, :employment_type, 
                 :declare, :agreement 
             )
-
         item = Registration.new(form)
         item.created_by = @current_user.en_name
         item.updated_by = @current_user.en_name
+
+        membershipId = params.permit(:membership_id)
+        if membershipId[:membership_id].present? && Membership.exists?(membershipId[:membership_id])
+            membership = Membership.find(membershipId[:membership_id])
+            item.membership = membership;
+        end
+
         if !item.valid?
             render status:500, json: {
                 error: "invalid",
@@ -106,8 +112,14 @@ class Api::RegistrationsController < Api::ApplicationController
         item.save
 
         result = item.attributes.except(
-            'is_deleted','member_id','employment_proof_file_name','employment_proof_content_type','employment_proof_file_size','uuid'
+            'is_deleted','membership_id','employment_proof_file_name','employment_proof_content_type','employment_proof_file_size','uuid'
         )
+
+        if item.membership.nil?
+           result[:membership_ref] = nil
+        else
+            result[:membership_ref] = item.membership.membership_ref 
+        end
 
         if item.employment_proof_file_name.nil?
             result[:employment_proof] = nil
@@ -140,9 +152,16 @@ class Api::RegistrationsController < Api::ApplicationController
                 :company, :company_address, :department, :position, :employment_proof, :employment_type, 
                 :declare, :agreement, :status, :remark
             )
-        p form
+        
         item.assign_attributes(form)
         item.updated_by = @current_user.en_name
+
+        membershipId = params.permit(:membership_id)
+        if membershipId[:membership_id].present? && Membership.exists?(membershipId[:membership_id])
+            membership = Membership.find(membershipId[:membership_id])
+            item.membership = membership;
+        end
+
         if !item.valid?
             render status:500, json: {
                 error: "invalid",
@@ -155,6 +174,12 @@ class Api::RegistrationsController < Api::ApplicationController
         result = item.attributes.except(
             'is_deleted','member_id','employment_proof_file_name','employment_proof_content_type','employment_proof_file_size','uuid'
         )
+
+        if item.membership.nil?
+            result[:membership_ref] = nil
+         else
+             result[:membership_ref] = item.membership.membership_ref 
+         end
 
         if item.employment_proof_file_name.nil?
             result[:employment_proof] = nil

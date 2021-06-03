@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_11_145701) do
+ActiveRecord::Schema.define(version: 2021_06_03_084906) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -349,7 +349,6 @@ ActiveRecord::Schema.define(version: 2020_11_11_145701) do
   end
 
   create_table "registrations", force: :cascade do |t|
-    t.bigint "member_id"
     t.string "zh_first_name"
     t.string "zh_last_name"
     t.string "en_first_name"
@@ -394,7 +393,8 @@ ActiveRecord::Schema.define(version: 2020_11_11_145701) do
     t.string "updated_by"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["member_id"], name: "index_registrations_on_member_id"
+    t.bigint "membership_id"
+    t.index ["membership_id"], name: "index_registrations_on_membership_id"
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -485,7 +485,7 @@ ActiveRecord::Schema.define(version: 2020_11_11_145701) do
   add_foreign_key "membership_transactions", "transactions"
   add_foreign_key "memberships", "members"
   add_foreign_key "payments", "payment_types"
-  add_foreign_key "registrations", "members"
+  add_foreign_key "registrations", "memberships"
   add_foreign_key "transactions", "bank_accounts"
   add_foreign_key "user_tokens", "users"
   add_foreign_key "users", "user_roles"
