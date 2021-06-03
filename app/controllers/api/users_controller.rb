@@ -140,7 +140,7 @@ class Api::UsersController < Api::ApplicationController
             data: user
         }
     rescue ActiveRecord::RecordNotFound => e
-        render json: { message: "data_not_found", error: "data_not_found" }, status: :not_found
+        render json: { message: e.message, error: "data_not_found" }, status: :not_found
     rescue => e
         p e
         render json: { error: "system_error", message: e.message }, status: :internal_server_error
@@ -208,7 +208,7 @@ class Api::UsersController < Api::ApplicationController
             data: user
         }
     rescue ActiveRecord::RecordNotFound => e
-        render json: { message: "data_not_found", error: "data_not_found" }, status: :not_found
+        render json: { message: e.message, error: "data_not_found" }, status: :not_found
     rescue => e
         render json: { error: "system_error", message: e.message }, status: :internal_server_error
     end
@@ -230,7 +230,7 @@ class Api::UsersController < Api::ApplicationController
             data: nil
         }
     rescue ActiveRecord::RecordNotFound => e
-        render json: { message: "data_not_found", error: "data_not_found" }, status: :not_found
+        render json: { message: e.message, error: "data_not_found" }, status: :not_found
     rescue => e
         render json: { error: "system_error", message: e.message }, status: :internal_server_error
     end

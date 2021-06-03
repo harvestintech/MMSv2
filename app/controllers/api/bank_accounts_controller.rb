@@ -67,7 +67,7 @@ class Api::BankAccountsController < Api::ApplicationController
             data: result
         }
     rescue ActiveRecord::RecordNotFound => e
-        render json: { message: "data_not_found", error: "data_not_found" }, status: :not_found
+        render json: { message: e.message, error: "data_not_found" }, status: :not_found
     rescue => e
         render json: { error: "system_error", message: e.message }, status: :internal_server_error
     end
@@ -133,14 +133,14 @@ class Api::BankAccountsController < Api::ApplicationController
         }
 
     rescue ActiveRecord::RecordNotFound => e
-        render json: { message: "data_not_found", error: "data_not_found" }, status: :not_found
+        render json: { message: e.message, error: "data_not_found" }, status: :not_found
     rescue => e
         render json: { error: "system_error", message: e.message }, status: :internal_server_error
     end
 
     def delete
         item_id = params[:item_id]
-        
+
         item = BankAccount.active.find(item_id.to_i)
 
         item.is_deleted = true
@@ -151,7 +151,7 @@ class Api::BankAccountsController < Api::ApplicationController
             data: nil
         }
     rescue ActiveRecord::RecordNotFound => e
-        render json: { message: "data_not_found", error: "data_not_found" }, status: :not_found
+        render json: { message: e.message, error: "data_not_found" }, status: :not_found
     rescue => e
         render json: { error: "system_error", message: e.message }, status: :internal_server_error
     end
