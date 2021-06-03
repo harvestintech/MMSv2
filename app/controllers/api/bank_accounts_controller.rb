@@ -155,4 +155,34 @@ class Api::BankAccountsController < Api::ApplicationController
     rescue => e
         render json: { error: "system_error", message: e.message }, status: :internal_server_error
     end
+
+    def get_transactions
+        item_id = params[:item_id]
+        item = BankAccount.active.find(item_id)
+        
+        query = params.permit(:offset,:limit,:orderBy,:sortBy)
+        offset = query[:offset].present? ? query[:offset] : 0
+        size = query[:limit].present? ? query[:limit] : 25
+        order = query[:orderBy].present? ? query[:orderBy] : "trans_at"
+        sort = query[:sortBy].present? ? query[:sortBy] : "desc"
+        
+        items = item.transactions.active
+
+        items = items.order(order => sort)
+
+        result = items.paginate(offset,size).map { |item|
+            trans = item.attributes.except("is_deleted","bank_account_id")
+            trans
+        }
+        render json: {
+            message: "success",
+            error: nil,
+            data: result
+        }
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { message: e.message, error: "data_not_found" }, status: :not_found
+    rescue => e
+        render json: { error: "system_error", message: e.message }, status: :internal_server_error
+    end
+
 end
