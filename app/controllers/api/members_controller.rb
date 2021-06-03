@@ -32,10 +32,14 @@ class Api::MembersController < Api::ApplicationController
         end
 
         createdRange = params.permit(:created_from, :created_to)
-        items = items.creation_range(createdRange[:created_from], createdRange[:created_to])
+        if createdRange[:created_from].present? || createdRange[:created_to].present?
+            items = items.date_range_filter("created_at",createdRange[:created_from], createdRange[:created_to])
+        end
 
         updatedRange = params.permit(:updated_from, :updated_to)
-        items = items.updated_range(updatedRange[:updated_from], updatedRange[:updated_to])
+        if updatedRange[:updated_from].present? || updatedRange[:updated_to].present?
+            items = items.date_range_filter("updated_at",updatedRange[:updated_from], updatedRange[:updated_to])
+        end
             
         items = items.order(order => sort)
         render json: {

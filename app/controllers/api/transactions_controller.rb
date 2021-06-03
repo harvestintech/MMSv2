@@ -19,31 +19,28 @@ class Api::TransactionsController < Api::ApplicationController
         }
         
         transRange = params.permit(:trans_from, :trans_to)
-        from = transRange[:trans_from].present? ? transRange[:trans_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
-        to = transRange[:trans_to].present? ? transRange[:trans_to].to_time.end_of_day : DateTime.now.end_of_day
         if transRange[:trans_from].present? || transRange[:trans_to].present?
-            items = items.where(trans_at: from..to)
+            items = items.date_range_filter("trans_at",transRange[:trans_from], transRange[:trans_to])
         end
 
         confirmRange = params.permit(:confirm_from, :confirm_to)
-        from = confirmRange[:confirm_from].present? ? confirmRange[:confirm_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
-        to = confirmRange[:confirm_to].present? ? confirmRange[:confirm_to].to_time.end_of_day : DateTime.now.end_of_day
         if confirmRange[:confirm_from].present? || confirmRange[:confirm_to].present?
-            items = items.where(confirm_at: from..to)
+            items = items.date_range_filter("confirm_at",confirmRange[:confirm_from], confirmRange[:confirm_to])
         end
 
         handledRange = params.permit(:handled_from, :handled_to)
-        from = handledRange[:handled_from].present? ? handledRange[:handled_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
-        to = handledRange[:handled_to].present? ? handledRange[:handled_to].to_time.end_of_day : DateTime.now.end_of_day
         if handledRange[:handled_from].present? || handledRange[:handled_to].present?
-            items = items.where(handled_at: from..to)
+            items = items.date_range_filter("handled_at",handledRange[:handled_from], handledRange[:handled_to])
         end
 
         receivedRange = params.permit(:received_from, :received_to)
-        from = receivedRange[:received_from].present? ? receivedRange[:received_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
-        to = receivedRange[:received_to].present? ? receivedRange[:received_to].to_time.end_of_day : DateTime.now.end_of_day
         if receivedRange[:received_from].present? || receivedRange[:received_to].present?
-            items = items.where(bank_received: from..to)
+            items = items.date_range_filter("bank_received",receivedRange[:received_from], receivedRange[:received_to])
+        end
+
+        amountRange = params.permit(:amount_from, :amount_to)
+        if amountRange[:amount_from].present? || amountRange[:amount_to].present?
+            items = items.decimal_range_filter("amount",amountRange[:amount_from],amountRange[:amount_to])
         end
 
         items = items.order(order => sort)

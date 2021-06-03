@@ -35,10 +35,8 @@ class Api::BankAccountsController < Api::ApplicationController
         }
         
         createdRange = params.permit(:created_from, :created_to)
-        from = createdRange[:created_from].present? ? createdRange[:created_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
-        to = createdRange[:created_to].present? ? createdRange[:created_to].to_time.end_of_day : DateTime.now.end_of_day
         if createdRange[:created_from].present? || createdRange[:created_to].present?
-            items = items.where(bank_created_at: from..to)
+            items = items.date_range_filter("created_at",createdRange[:created_from], createdRange[:created_to])
         end
 
         items = items.order(order => sort)

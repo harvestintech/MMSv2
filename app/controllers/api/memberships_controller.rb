@@ -21,24 +21,29 @@ class Api::MembershipsController < Api::ApplicationController
         }
 
         approvedRange = params.permit(:approved_from, :approved_to)
-        approvedFrom = approvedRange[:approved_from].present? ? approvedRange[:approved_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
-        approvedTo = approvedRange[:approved_to].present? ? approvedRange[:approved_to].to_time.end_of_day : DateTime.now.end_of_day
         if approvedRange[:approved_from].present? || approvedRange[:approved_to].present?
-            items = items.where(apply_at: approvedFrom..approvedTo)
+            items = items.date_range_filter("apply_at",approvedRange[:approved_from], approvedRange[:approved_to])
         end
 
         expiredRange = params.permit(:expried_from, :expried_to)
-        expriedFrom = expiredRange[:expried_from].present? ? expiredRange[:expried_from].to_time.beginning_of_day : "1900-01-01".to_time.beginning_of_day
-        expriedTo = expiredRange[:expried_to].present? ? expiredRange[:expried_to].to_time.end_of_day : DateTime.now.end_of_day
         if expiredRange[:expried_from].present? || expiredRange[:expried_to].present?
-            items = items.where(expired_at: expriedFrom..expriedTo)
+            items = items.date_range_filter("expired_at",expiredRange[:expried_from], expiredRange[:created_to])
+        end
+
+        updatedRange = params.permit(:updated_from, :updated_to)
+        if updatedRange[:updated_from].present? || updatedRange[:updated_to].present?
+            items = items.date_range_filter("updated_at",updatedRange[:updated_from], updatedRange[:updated_to])
         end
 
         createdRange = params.permit(:created_from, :created_to)
-        items = items.creation_range(createdRange[:created_from], createdRange[:created_to])
+        if createdRange[:created_from].present? || createdRange[:created_to].present?
+            items = items.date_range_filter("created_at",createdRange[:created_from], createdRange[:created_to])
+        end
 
         updatedRange = params.permit(:updated_from, :updated_to)
-        items = items.updated_range(updatedRange[:updated_from], updatedRange[:updated_to])
+        if updatedRange[:updated_from].present? || updatedRange[:updated_to].present?
+            items = items.date_range_filter("updated_at",updatedRange[:updated_from], updatedRange[:updated_to])
+        end
             
         items = items.order(order => sort)
         render json: {
