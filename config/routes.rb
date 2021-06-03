@@ -22,13 +22,22 @@ Rails.application.routes.draw do
       put "/update/:item_id" => :update
       patch "/update/:item_id" => :update
     end
+    scope :controller => "payment_types", :path => "payment_types" do
+      get "/" => :list
+      get "/all" => :all
+      get "/:item_id" => :get
+      # delete "/:item_id" => :delete
+      post "/create" => :create
+      put "/update/:item_id" => :update
+      patch "/update/:item_id" => :update
+    end
     
     scope :controller => "bank_accounts", :path => "bank_accounts" do
       get "/" => :list
       get "/all" => :all
       get "/:item_id" => :get
       get "/:item_id/transactions" => :get_transactions
-      delete "/:item_id" => :delete
+      # delete "/:item_id" => :delete
       post "/create" => :create
       put "/update/:item_id" => :update
       patch "/update/:item_id" => :update
