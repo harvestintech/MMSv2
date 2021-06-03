@@ -19,7 +19,7 @@ class Api::ApplicationController < ApplicationController
           token = token.gsub(pattern, '') if token && token.match(pattern)
         end
 
-        if token.nil?
+        if !token.present?
             render json: { message: "token_not_found", error: "token_not_found" }, status: :unauthorized
             return
         end
