@@ -74,7 +74,7 @@ class Api::BankAccountsController < Api::ApplicationController
 
     def create
         form = params.permit(
-                :bank_name, :account_no, :remark, :bank_created_at
+                :bank_name, :account_no, :remark, :bank_created_at, :is_actived
             )
 
         item = BankAccount.new(form)
@@ -108,7 +108,7 @@ class Api::BankAccountsController < Api::ApplicationController
         item = BankAccount.active.find(id.to_i)
 
         form = params.permit(
-                :bank_name, :account_no, :remark, :bank_created_at
+                :bank_name, :account_no, :remark, :bank_created_at, :is_actived
             )
         item.assign_attributes(form)
         item.updated_by = @current_user.en_name
