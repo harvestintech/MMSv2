@@ -1,0 +1,43 @@
+@import "./main.scss";
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC:400,500,700,900|Open+Sans:400,500,700,900&display=swap');
+
+* {
+    font-family: 'Open Sans', sans-serif;
+    font-family: 'Noto Sans TC', sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: $color-grey;
+}
+
+/* Text Color */
+.txt-regal {
+    color: $color-regal-blue;
+}
+.txt-red {
+    color: $color-red;
+}
+.txt-orange {
+    color: $color-orange;
+}
+.txt-cerulean {
+    color: $color-cerulean;
+}
+.txt-lemon {
+    color: $color-lemon;
+}
+
+.error {
+    color: $color-red !important;
+}
+
+.text-right {
+    text-align: right;
+}
+.text-left {
+    text-align: left;
+}
+.text-center {
+    text-align: center;
+}
